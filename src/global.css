@@ -1,0 +1,49 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+
+body {
+  margin: 0;
+  line-height: normal;
+}
+:root {
+  /* fonts */
+  --body-2-medium: Inter;
+
+  /* font sizes */
+  --body-2-medium-size: 14px;
+  --font-size-base: 16px;
+  --heading-1-semi-bold-size: 30px;
+  --font-size-lg: 18px;
+  --font-size-5xl: 24px;
+
+  /* Colors */
+  --color-white: #fff;
+  --primary-primary-600: #1366d9;
+  --grey-grey-500: #667085;
+  --grey-grey-700: #48505e;
+  --grey-grey-900: #2b2f38;
+  --color-lightgray: #d0d5dd;
+
+  /* Gaps */
+  --gap-5xl: 24px;
+  --gap-xl: 20px;
+  --gap-11xl-5: 30.5px;
+  --gap-mini: 15px;
+  --gap-9xs: 4px;
+  --gap-base: 16px;
+  --gap-5xs: 8px;
+  --gap-7xs: 6px;
+  --gap-xs: 12px;
+
+  /* Paddings */
+  --padding-180xl: 199px;
+  --padding-xl: 20px;
+  --padding-56xl: 75px;
+  --padding-5xs: 8px;
+  --padding-smi: 13px;
+  --padding-lg: 18px;
+
+  /* Border radiuses */
+  --br-xs: 12px;
+  --br-5xs: 8px;
+}

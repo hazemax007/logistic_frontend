@@ -1,0 +1,17 @@
+/* App.css */
+.app-container {
+  display: flex; /* Use flexbox for layout */
+  height: 100vh; /* Full height of viewport */
+}
+
+.sidebar {
+  width: 250px; /* Fixed width for sidebar */
+  background-color: #f0f0f0; /* Sidebar background color */
+  /* Add other styling as needed */
+}
+
+.main-content {
+  flex: 1; /* Take remaining space */
+  padding: 20px; /* Example padding for content area */
+  /* Add other styling as needed */
+}

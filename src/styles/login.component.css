@@ -1,0 +1,44 @@
+.image-2-icon {
+  height: 51px;
+  width: 68px;
+  position: relative;
+  object-fit: contain;
+}
+.image-2-wrapper {
+  width: 360px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  max-width: 100%;
+}
+.login {
+  width: 100%;
+  position: relative;
+  background-color: var(--color-white);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: var(--padding-180xl) 238px var(--padding-180xl) 145px;
+  box-sizing: border-box;
+  gap: var(--gap-5xl);
+  line-height: normal;
+  letter-spacing: normal;
+}
+@media screen and (max-width: 750px) {
+  .login {
+    padding-left: 72px;
+    padding-right: 119px;
+    box-sizing: border-box;
+  }
+}
+@media screen and (max-width: 450px) {
+  .login {
+    padding-left: var(--padding-xl);
+    padding-right: var(--padding-xl);
+    box-sizing: border-box;
+  }
+}
+
