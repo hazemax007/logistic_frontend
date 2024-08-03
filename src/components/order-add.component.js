@@ -24,7 +24,7 @@ const OrderAdd = ({ onAdd }) => {
     ref: "",
     deliveryLocation: "",
     deliveryDate: "",
-    status: "pending",
+    status: "processing",
     productSelections: [],
     customerInfo: {
       firstname: "",
@@ -129,7 +129,7 @@ const OrderAdd = ({ onAdd }) => {
 
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/orders/${userId}`,
+        `http://localhost:8080/api/orders`,
         { ...orderPayload, products: orderProducts },
         {
           headers: {
@@ -143,7 +143,7 @@ const OrderAdd = ({ onAdd }) => {
         ref: "",
         deliveryLocation: "",
         deliveryDate: "",
-        status: "pending",
+        status: "processing",
         productSelections: [],
         customerInfo: {
           firstname: "",
@@ -210,11 +210,10 @@ const OrderAdd = ({ onAdd }) => {
               variant="outlined"
               margin="normal"
             >
-              <MenuItem value="pending">Pending</MenuItem>
               <MenuItem value="processing">Processing</MenuItem>
-              <MenuItem value="fulfilled">Fulfilled</MenuItem>
               <MenuItem value="shipped">Shipped</MenuItem>
               <MenuItem value="delivered">Delivered</MenuItem>
+              <MenuItem value="returned">Returned</MenuItem>
             </TextField>
             <Typography variant="h6" gutterBottom>
               Ordered Products

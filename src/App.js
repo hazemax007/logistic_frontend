@@ -23,6 +23,7 @@ import Stores from "./components/stores.component";
 import Users from "./components/users.component";
 import VerifyUser from "./components/verify-user.component";
 import { Inventory } from "@mui/icons-material";
+import Dashboardd from "./components/statistics/general-stats.component";
 
 const App = () => {
   const [showModeratorBoard, setShowModeratorBoard] = useState(false);
@@ -78,7 +79,7 @@ const App = () => {
       {currentUser  && <Sidebar />}
       <div className="main-content">
         <Routes>
-          <Route path="/" element={<Products />} />
+          <Route path="/" element={<Login />} />
           <Route path="/home" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -95,6 +96,7 @@ const App = () => {
           <Route path="/customers" element={<Customers />} />
           <Route path="/stores" element={<Stores />} />
           <Route path="/users" element={<Users />} />
+
           {/* Add more routes as needed */}
         </Routes>
       </div>

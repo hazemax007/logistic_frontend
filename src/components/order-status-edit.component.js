@@ -88,9 +88,9 @@ const OrderStatusUpdate = ({ open, onClose, order, onUpdate, onReload }) => {
             margin="normal"
           >
             <MenuItem value="processing">Processing</MenuItem>
-            <MenuItem value="fulfilled">Fulfilled</MenuItem>
             <MenuItem value="shipped">Shipped</MenuItem>
             <MenuItem value="delivered">Delivered</MenuItem>
+            <MenuItem value="returned">Returned</MenuItem>
           </TextField>
           {orderData.status === "shipped" && (
             <>

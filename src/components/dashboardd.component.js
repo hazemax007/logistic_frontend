@@ -1,23 +1,27 @@
 import React, { useState } from 'react';
-import OrderByPriceBarChart from "./charts/order-by-price-barchart.component";
-import OrderByStatusPieChart from "./charts/order-by-status-piechart.component";
-import OrderComparisonAreaChart from "./charts/order-comparison-areachart.component";
-import OrderComparisonLineChart from "./charts/order-comparison-linechart.component";
-import DashboardGeneralStats from "./stats/dashboard-general-stats.component";
 import { Container, Grid, Button, Typography, Box, Paper } from '@mui/material';
-import OrderComparisonBarChart from './charts/order-comparison-barchart.component';
-import LabelByWeightPieChart from './charts/label-by-weight-piechart.component';
-import PurchasesByFeedbackPieChart from './charts/purchase-by-feedback-piechart.component';
-import TopSellingProductsChart from './stats/top-selling-product-stats.component';
+import { DashboardGeneralStats } from './stats/dashboard-general-stats.component'
 import OrderStatusDistribution from './graphs/orders-distribution-by-status.component';
+import OrderByStatusPieChart from './charts/order-by-status-piechart.component';
+import OrderComparisonAreaChart from './charts/order-comparison-areachart.component';
+import OrderComparisonLineChart from './charts/order-comparison-linechart.component';
+import OrderComparisonBarChart from './charts/order-comparison-barchart.component';
+import PurchasesByFeedbackPieChart from './charts/purchase-by-feedback-piechart.component';
+import LabelByWeightPieChart from './charts/label-by-weight-piechart.component';
+
 //import '../styles/dashboard.component.css'; // Import your custom styles
 
-const Dashboard = () => {
+const Dashboardd = () => {
   const charts = [
     <Grid container spacing={2} key="page-1">
-      <Grid item xs={12} md={12}>
+      <Grid item xs={12} md={6}>
         <Paper elevation={3}>
           <OrderStatusDistribution />
+        </Paper>
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <Paper elevation={3}>
+          <OrderByStatusPieChart />
         </Paper>
       </Grid>
     </Grid>,
@@ -85,4 +89,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Dashboardd;
