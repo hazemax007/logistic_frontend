@@ -117,10 +117,6 @@ const Orders = () => {
         <Divider />
         <Box display="flex" justifyContent="flex-end" mb={2}>
           <OrderAdd onAdd={handleAddOrder} />
-          <Button variant="outlined" style={{ marginRight: "8px" }}>
-            Filters
-          </Button>
-          <Button variant="outlined">Order History</Button>
         </Box>
         <TableContainer component={Paper}>
           <Table>
@@ -138,7 +134,7 @@ const Orders = () => {
               {currentOrders.map((order, index) => (
                 <TableRow key={index}>
                   <TableCell>{order.ref}</TableCell>
-                  <TableCell>{order.value} DT</TableCell>
+                  <TableCell>{(order.value).toFixed(2)} DT</TableCell>
                   <TableCell>{order.deliveryLocation}</TableCell>
                   <TableCell>{formatDate(order.deliveryDate)}</TableCell>
                   <TableCell className={`status ${order.status}`}>

@@ -21,6 +21,7 @@ import {
 const ProductDetails = ({ open, onClose, product }) => {
   // Ensure product is defined before rendering
   if (!product) return null;
+  
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -67,11 +68,11 @@ const ProductDetails = ({ open, onClose, product }) => {
               <Divider />
               <Box my={2}>
                 <Typography variant="subtitle2">Supplier Name</Typography>
-                <Typography variant="body1">Ronald Martin</Typography>
+                <Typography variant="body1"> {product.suppliers[0].name} </Typography>
               </Box>
               <Box my={2}>
                 <Typography variant="subtitle2">Contact Number</Typography>
-                <Typography variant="body1">98789 86757</Typography>
+                <Typography variant="body1">  {product.suppliers[0].phone} </Typography>
               </Box>
               <Typography variant="h6" gutterBottom mt={3}>
                 Stock Information

@@ -43,7 +43,7 @@ const UpdateUser = ({ user, roles, onUpdate, onClose }) => {
     };
 
     axios
-      .put(`/api/users/${user.id}`, userToUpdate)
+      .put(`http://localhost:8080/api/test/users/${user.id}`, userToUpdate)
       .then((response) => {
         onUpdate(response.data);
         onClose();

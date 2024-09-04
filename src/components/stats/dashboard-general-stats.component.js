@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Select, MenuItem, FormControl, InputLabel, Box, Typography, Paper, Grid } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClipboardList, faMoneyBillAlt, faWarehouse } from '@fortawesome/free-solid-svg-icons';
+import { faBox, faClipboardList, faMoneyBillAlt, faWarehouse } from '@fortawesome/free-solid-svg-icons';
 
 const DashboardGeneralStats = () => {
   const [stats, setStats] = useState({
@@ -49,15 +49,15 @@ const DashboardGeneralStats = () => {
           <MenuItem value="year">Last Year</MenuItem>
         </Select>
       </FormControl>
-      <Grid container spacing={3}>
-        <Grid item xs={12} sm={4}>
+      <Grid container spacing={4}>
+        <Grid item xs={12} sm={3}>
           <Paper sx={{ p: 2, textAlign: 'center' }}>
             <FontAwesomeIcon icon={faClipboardList} size="2x" />
             <Typography variant="h6">Orders</Typography>
             <Typography variant="h4">{stats.totalOrders}</Typography>
           </Paper>
         </Grid>
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={3}>
           <Paper sx={{ p: 2, textAlign: 'center' }}>
             <FontAwesomeIcon icon={faMoneyBillAlt} size="2x" />
             <Typography variant="h6">Revenue</Typography>
@@ -66,7 +66,16 @@ const DashboardGeneralStats = () => {
             </Typography>
           </Paper>
         </Grid>
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={3}>
+          <Paper sx={{ p: 2, textAlign: 'center' }}>
+            <FontAwesomeIcon icon={faBox} size="2x" />
+            <Typography variant="h6">Products</Typography>
+            <Typography variant="h4">
+              {stats.totalProducts}
+            </Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} sm={3}>
           <Paper sx={{ p: 2, textAlign: 'center' }}>
             <FontAwesomeIcon icon={faWarehouse} size="2x" />
             <Typography variant="h6">Quantity in Hand</Typography>

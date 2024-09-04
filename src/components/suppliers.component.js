@@ -107,10 +107,6 @@ const Suppliers = () => {
         </Typography>
         <Box display="flex" justifyContent="flex-end" mb={2}>
           <SupplierAdd onAdd={handleAddSupplier} />
-          <Button variant="outlined" style={{ marginRight: "8px" }}>
-            Filters
-          </Button>
-          <Button variant="outlined">Download all</Button>
         </Box>
         <TableContainer component={Paper}>
           <Table>

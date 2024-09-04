@@ -30,7 +30,7 @@ const Products = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const productsPerPage = 10;
+  const productsPerPage = 5;
 
   useEffect(() => {
     axios
@@ -106,7 +106,6 @@ const Products = () => {
           <Button variant="outlined" style={{ marginRight: "8px" }}>
             Filters
           </Button>
-          <Button variant="outlined">Download all</Button>
         </Box>
         <TableContainer component={Paper}>
           <Table>

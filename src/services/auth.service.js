@@ -35,7 +35,7 @@ class AuthService {
     return axios.post(API_URL + "forget-password", email)
   }
 
-  getCurrentUser() {
+    getCurrentUser() {
     return JSON.parse(localStorage.getItem('user'));
   }
 

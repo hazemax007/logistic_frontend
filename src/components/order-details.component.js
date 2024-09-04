@@ -1,4 +1,4 @@
-import React from "react";
+import React , {useState} from "react";
 import {
   Box,
   Dialog,
@@ -11,28 +11,40 @@ import {
 import axios from 'axios';
 
 const OrderDetails = ({ open, onClose, order }) => {
+  const [invoiceMessage, setInvoiceMessage] = useState('');
+  const [invoiceFilePath, setInvoiceFilePath] = useState('');
   if (!order) return null;
+  //console.log(order);
+  
 
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "numeric", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  const handleDownloadInvoice = async () => {
+  const handleGenerateInvoice = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/orders/generate-invoice/${order.id}`, {
-        responseType: 'blob', // Important for downloading files
+      const response = await fetch(`http://localhost:8080/api/orders/generate-invoice/${order.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/pdf'
+        }
       });
 
-      // Create a link element to trigger the download
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `invoice_${order.ref}.pdf`);
-      document.body.appendChild(link);
-      link.click();
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `invoice_${order.id}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+      } else {
+        console.error('Error generating invoice:', response.statusText);
+      }
     } catch (error) {
-      console.error('Failed to download invoice:', error);
+      console.error('Error:', error);
     }
   };
 
@@ -65,7 +77,7 @@ const OrderDetails = ({ open, onClose, order }) => {
         <Button onClick={onClose} color="primary">
           Close
         </Button>
-        <Button onClick={handleDownloadInvoice} color="secondary">
+        <Button onClick={handleGenerateInvoice} color="secondary">
           Download Invoice
         </Button>
       </DialogActions>

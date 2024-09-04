@@ -25,20 +25,23 @@ const OrderAdd = ({ onAdd }) => {
     deliveryLocation: "",
     deliveryDate: "",
     status: "processing",
-    productSelections: [],
     customerInfo: {
-      firstname: "",
-      lastname: "",
       email: "",
-      address: "",
-      phone: "",
-      billingAddress: "",
     },
+    storeInfo: {
+      name: "",
+    },
+    productSelections: [],
   });
+
   const [products, setProducts] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [stores, setStores] = useState([]);
 
   useEffect(() => {
     fetchProducts();
+    fetchCustomers();
+    fetchStores();
   }, []);
 
   const fetchProducts = async () => {
@@ -47,6 +50,24 @@ const OrderAdd = ({ onAdd }) => {
       setProducts(response.data);
     } catch (error) {
       console.error("Error fetching products:", error);
+    }
+  };
+
+  const fetchCustomers = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/api/customers");
+      setCustomers(response.data);
+    } catch (error) {
+      console.error("Error fetching customers:", error);
+    }
+  };
+
+  const fetchStores = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/api/stores");
+      setStores(response.data);
+    } catch (error) {
+      console.error("Error fetching stores:", error);
     }
   };
 
@@ -60,7 +81,16 @@ const OrderAdd = ({ onAdd }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name.startsWith("customerInfo.")) {
+    if (name.startsWith("storeInfo.")) {
+      const storeField = name.split(".")[1];
+      setOrderData((prevData) => ({
+        ...prevData,
+        storeInfo: {
+          ...prevData.storeInfo,
+          [storeField]: value,
+        },
+      }));
+    } else if (name.startsWith("customerInfo.")) {
       const customerField = name.split(".")[1];
       setOrderData((prevData) => ({
         ...prevData,
@@ -144,15 +174,13 @@ const OrderAdd = ({ onAdd }) => {
         deliveryLocation: "",
         deliveryDate: "",
         status: "processing",
-        productSelections: [],
         customerInfo: {
-          firstname: "",
-          lastname: "",
           email: "",
-          address: "",
-          phone: "",
-          billingAddress: "",
         },
+        storeInfo: {
+          name: "",
+        },
+        productSelections: [],
       });
       setOpen(false);
     } catch (error) {
@@ -279,70 +307,47 @@ const OrderAdd = ({ onAdd }) => {
               Add Product
             </Button>
             <Typography variant="h6" gutterBottom>
-              Customer Information
+              To Customer
             </Typography>
-            <TextField
-              fullWidth
-              label="First Name"
-              name="customerInfo.firstname"
-              value={orderData.customerInfo.firstname}
-              onChange={handleChange}
-              variant="outlined"
-              margin="normal"
-            />
-            <TextField
-              fullWidth
-              label="Last Name"
-              name="customerInfo.lastname"
-              value={orderData.customerInfo.lastname}
-              onChange={handleChange}
-              variant="outlined"
-              margin="normal"
-            />
-            <TextField
-              fullWidth
-              label="Email"
-              name="customerInfo.email"
-              value={orderData.customerInfo.email}
-              onChange={handleChange}
-              variant="outlined"
-              margin="normal"
-            />
-            <TextField
-              fullWidth
-              label="Address"
-              name="customerInfo.address"
-              value={orderData.customerInfo.address}
-              onChange={handleChange}
-              variant="outlined"
-              margin="normal"
-            />
-            <TextField
-              fullWidth
-              label="Phone"
-              name="customerInfo.phone"
-              value={orderData.customerInfo.phone}
-              onChange={handleChange}
-              variant="outlined"
-              margin="normal"
-            />
-            <TextField
-              fullWidth
-              label="Billing Address"
-              name="customerInfo.billingAddress"
-              value={orderData.customerInfo.billingAddress}
-              onChange={handleChange}
-              variant="outlined"
-              margin="normal"
-            />
+            <FormControl fullWidth variant="outlined" margin="normal">
+              <InputLabel>Customer Email</InputLabel>
+              <Select
+                value={orderData.customerInfo.email}
+                onChange={handleChange}
+                name="customerInfo.email"
+                label="Customer Email"
+              >
+                {customers.map((customer) => (
+                  <MenuItem key={customer.id} value={customer.email}>
+                    {customer.email}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <Typography variant="h6" gutterBottom>
+              From Store
+            </Typography>
+            <FormControl fullWidth variant="outlined" margin="normal">
+              <InputLabel>Store name</InputLabel>
+              <Select
+                value={orderData.storeInfo.name}
+                onChange={handleChange}
+                name="storeInfo.name"
+                label="Store Name"
+              >
+                {stores.map((store) => (
+                  <MenuItem key={store.id} value={store.name}>
+                    {store.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} color="primary" variant="contained">
-            Add
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleSubmit} color="primary">
+            Submit
           </Button>
         </DialogActions>
       </Dialog>
@@ -351,3 +356,5 @@ const OrderAdd = ({ onAdd }) => {
 };
 
 export default OrderAdd;
+
+
