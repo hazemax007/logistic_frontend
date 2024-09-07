@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import AuthService from "../services/auth.service";
 import {
   Box,
   Button,
@@ -12,6 +13,7 @@ import axios from "axios";
 
 const SupplierAdd = ({ onAdd }) => {
   const [open, setOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(undefined);
   const [supplierData, setSupplierData] = useState({
     name: "",
     phone: "",
@@ -21,6 +23,14 @@ const SupplierAdd = ({ onAdd }) => {
     deliveryTerms: "",
     specialAgreements: "",
   });
+
+  useEffect(() => {
+    const user = AuthService.getCurrentUser();
+
+    if (user) {
+      setCurrentUser(user);
+    }
+  }, []);
 
   const handleOpen = () => {
     setOpen(true);
@@ -40,7 +50,7 @@ const SupplierAdd = ({ onAdd }) => {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post("http://localhost:8080/api/suppliers/user/1", supplierData, {
+      const response = await axios.post(`http://localhost:8080/api/suppliers/user/${currentUser.id}`, supplierData, {
         headers: {
           "Content-Type": "application/json",
         },

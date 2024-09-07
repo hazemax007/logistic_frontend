@@ -15,7 +15,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { Delete as DeleteIcon, Edit as EditIcon, Visibility as VisibilityIcon } from "@mui/icons-material";
+import { Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
 import UpdateUser from './user-update.component';
 
 const Users = () => {
@@ -25,7 +25,7 @@ const Users = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const usersPerPage = 10;
 
-  const roles = ["admin", "manager", "paymaster"];
+  const roles = ["admin", "manager", "user"];
 
   useEffect(() => {
     fetchUsers();
@@ -41,39 +41,38 @@ const Users = () => {
   };
 
   const handleUpdateUser = (updatedUser) => {
+    // Update the user list with the newly updated user, including roles
     setUsers((prevUsers) =>
-      prevUsers.map((user) =>
-        user.id === updatedUser.id ? updatedUser : user
-      )
+      prevUsers.map((user) => (user.id === updatedUser.id ? updatedUser : user))
     );
+    setIsEditModalOpen(false); // Close the modal after update
   };
 
   const handleDeleteUser = async (userId) => {
     try {
       await axios.delete(`http://localhost:8080/api/test/users/${userId}`);
-      setUsers((prevUsers) =>
-        prevUsers.filter((user) => user.id !== userId)
-      );
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
     } catch (error) {
       console.error("Error deleting user:", error);
     }
   };
 
-  const blockUser = async (userId) => {
-    try {
-      const response = await axios.post(`http://localhost:8080/api/test/users/block/${userId}`);
-      updateStatus(userId, response.data.status);
-    } catch (error) {
-      console.error("Error blocking user:", error);
-    }
-  };
+  // Unified block/unblock function for instant update
+  const toggleBlockUser = async (user) => {
+    const newStatus = user.status === "Active" ? "Blocked" : "Active";
+    
+    // Optimistically update the UI before making the API request
+    updateStatus(user.id, newStatus);
 
-  const unblockUser = async (userId) => {
     try {
-      const response = await axios.post(`http://localhost:8080/api/test/users/unblock/${userId}`);
-      updateStatus(userId, response.data.status);
+      await axios.post(
+        `http://localhost:8080/api/test/users/${newStatus === "Blocked" ? "block" : "unblock"}/${user.id}`
+      );
     } catch (error) {
-      console.error("Error unblocking user:", error);
+      console.error(`Error ${newStatus === "Blocked" ? "blocking" : "unblocking"} user:`, error);
+
+      // Revert the status update in case of an error
+      updateStatus(user.id, user.status);
     }
   };
 
@@ -140,13 +139,7 @@ const Users = () => {
                     <Button
                       variant="outlined"
                       color={user.status === 'Active' ? "secondary" : "primary"}
-                      onClick={() => {
-                        if (user.status === 'Active') {
-                          blockUser(user.id);
-                        } else {
-                          unblockUser(user.id);
-                        }
-                      }}
+                      onClick={() => toggleBlockUser(user)}
                     >
                       {user.status === 'Active' ? 'Block' : 'Unblock'}
                     </Button>
@@ -169,7 +162,7 @@ const Users = () => {
         </Box>
       </Box>
 
-      {isEditModalOpen && selectedUser && (
+      {isEditModalOpen && (
         <UpdateUser
           user={selectedUser}
           roles={roles}
@@ -182,4 +175,3 @@ const Users = () => {
 };
 
 export default Users;
-

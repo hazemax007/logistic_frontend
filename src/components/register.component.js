@@ -5,7 +5,8 @@ import CheckButton from "react-validation/build/button";
 import { isEmail } from "validator";
 
 import AuthService from "../services/auth.service";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
 
 const required = value => {
   if (!value) {
@@ -48,6 +49,8 @@ const vpassword = value => {
 };
 function Register() {
 
+  const navigate = useNavigate();
+
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -78,6 +81,9 @@ function Register() {
         (response) => {
           setMessage(response.data.message);
           setSuccessful(true);
+          setTimeout(() => {
+          navigate("/login");
+        }, 2000);  // Wait for 2 seconds before redirecting
         },
         (error) => {
           const resMessage =

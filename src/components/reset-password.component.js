@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 
 function ResetPassword() {
 
+  const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -28,6 +30,9 @@ function ResetPassword() {
       if (response.data.success) {
         alert("Password changed Ok");
         setSuccess(true)
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);  // Wait for 2 seconds before redirecting
       } else {
         setError(response.data.msg);
       }

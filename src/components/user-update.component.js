@@ -19,10 +19,14 @@ const UpdateUser = ({ user, roles, onUpdate, onClose }) => {
   const [updatedUser, setUpdatedUser] = useState(user);
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [error, setError] = useState('');
-  console.log(user)
 
+  // Sync user data and roles when the component mounts
   useEffect(() => {
-    setSelectedRoles(user.roles.map((role) => role.name)); // Initialize selectedRoles with user's current roles
+    setUpdatedUser(user);
+    if (user.roles) {
+      // Synchronize the selected roles when editing a user
+      setSelectedRoles(user.roles.map((role) => role.name));
+    }
   }, [user]);
 
   const handleRoleChange = (event) => {
@@ -39,13 +43,16 @@ const UpdateUser = ({ user, roles, onUpdate, onClose }) => {
 
     const userToUpdate = {
       ...updatedUser,
-      roles: selectedRoles,
+      roles: selectedRoles, // Updated selected roles
     };
 
     axios
       .put(`http://localhost:8080/api/test/users/${user.id}`, userToUpdate)
       .then((response) => {
+        // Update the parent component with the newly updated user data
         onUpdate(response.data);
+
+        // Close the dialog after updating
         onClose();
       })
       .catch((error) => setError(error.message));
@@ -82,7 +89,7 @@ const UpdateUser = ({ user, roles, onUpdate, onClose }) => {
                 control={
                   <Checkbox
                     value={role}
-                    checked={selectedRoles.includes(role)}
+                    checked={selectedRoles.includes(role)} // Dynamically set checked value
                     onChange={handleRoleChange}
                   />
                 }

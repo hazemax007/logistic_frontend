@@ -1,9 +1,11 @@
 // VerificationSuccessComponent.js
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import AuthService from '../services/auth.service';
 
 const VerifyUser = () => {
+
+  const navigate = useNavigate();
     const { verifyToken } = useParams();
     const [message, setMessage] = useState('');
   
@@ -12,6 +14,9 @@ const VerifyUser = () => {
         .then(response => {
           setMessage(response.data.message);
           console.log('verified successfully')
+          setTimeout(() => {
+          navigate("/login");
+        }, 2000);  // Wait for 2 seconds before redirecting
         })
         .catch(error => {
           const errorMessage =

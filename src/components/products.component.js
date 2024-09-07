@@ -19,29 +19,37 @@ import {
   Delete as DeleteIcon,
   Edit as EditIcon,
   Visibility as VisibilityIcon,
+  Add as AddIcon,
 } from "@mui/icons-material";
 import ProductDetails from "./product-details.component";
 import ProductAdd from "./product-add.component";
 import ProductEdit from "./product-edit.component";
+import UpdateQuantityDialog from "./update-qte-store.component";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
+  const [stores, setStores] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isQuantityDialogOpen, setIsQuantityDialogOpen] = useState(false);
   const productsPerPage = 5;
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/api/products")
-      .then((response) => {
-        setProducts(response.data);
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching products:", error);
-      });
+    const fetchProductsAndStores = async () => {
+      try {
+        const [productsResponse, storesResponse] = await Promise.all([
+          axios.get("http://localhost:8080/api/products"),
+          axios.get("http://localhost:8080/api/stores"),
+        ]);
+        setProducts(productsResponse.data);
+        setStores(storesResponse.data);
+      } catch (error) {
+        console.error("Error fetching products or stores:", error);
+      }
+    };
+    fetchProductsAndStores();
   }, []);
 
   const handleAddProduct = (newProduct) => {
@@ -49,7 +57,7 @@ const Products = () => {
   };
 
   const handleUpdateProduct = (updatedProduct) => {
-    setProducts(products.map((product) => 
+    setProducts(products.map((product) =>
       product.id === updatedProduct.id ? updatedProduct : product
     ));
   };
@@ -63,12 +71,22 @@ const Products = () => {
     }
   };
 
+  const handleOpenQuantityDialog = (product) => {
+    setSelectedProduct(product);
+    setIsQuantityDialogOpen(true);
+  };
+
+  const handleCloseQuantityDialog = () => {
+    setIsQuantityDialogOpen(false);
+    setSelectedProduct(null);
+  };
+
   const handleNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
+    setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
   };
 
   const handlePreviousPage = () => {
-    setCurrentPage((prevPage) => prevPage - 1);
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
   };
 
   const viewDetails = (product) => {
@@ -120,8 +138,8 @@ const Products = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {currentProducts.map((product, index) => (
-                <TableRow key={index}>
+              {currentProducts.map((product) => (
+                <TableRow key={product.id}>
                   <TableCell>{product.ref}</TableCell>
                   <TableCell>{product.name}</TableCell>
                   <TableCell>{product.buyPrice} DT</TableCell>
@@ -133,6 +151,9 @@ const Products = () => {
                     </IconButton>
                     <IconButton onClick={() => editProduct(product)} color="primary">
                       <EditIcon />
+                    </IconButton>
+                    <IconButton onClick={() => handleOpenQuantityDialog(product)} color="primary">
+                      <AddIcon />
                     </IconButton>
                     <IconButton onClick={() => handleDeleteProduct(product.id)} color="secondary">
                       <DeleteIcon />
@@ -166,6 +187,14 @@ const Products = () => {
         open={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         product={selectedProduct}
+        onUpdate={handleUpdateProduct}
+      />
+
+      <UpdateQuantityDialog
+        open={isQuantityDialogOpen}
+        onClose={handleCloseQuantityDialog}
+        product={selectedProduct}
+        stores={stores}
         onUpdate={handleUpdateProduct}
       />
     </Container>
