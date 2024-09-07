@@ -9,37 +9,37 @@ const menuItems = [
     name: "Dashboard",
     path: "/dashboard",
     icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/617b5b4039efc5a1c32182c5863e22598081548c958dc6d5d0cee6db65cd3794?apiKey=2af2801656554d03b3578dfa85dbd1f8&",
-    roles: ["ROLE_ADMIN", "ROLE_MANAGER"], // Admin and Manager can see
+    roles: ["ROLE_ADMIN", "ROLE_STOCK AGENT"], // Admin and Manager can see
   },
   {
     name: "Inventory",
     path: "/inventory",
     icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/92bb417e88930cc69815a3444f419cfd4a50891b44865bad5a1db928dfad75e1?apiKey=2af2801656554d03b3578dfa85dbd1f8&",
-    roles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_USER"],
+    roles: ["ROLE_ADMIN", "ROLE_STOCK AGENT", "ROLE_PAYMSTER"],
   },
   {
     name: "Customers",
     path: "/customers",
     icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/11db26cf0612d0e42addc57b0106962d2090f9fa3578d18a1df7ec75b125027d?apiKey=2af2801656554d03b3578dfa85dbd1f8&",
-    roles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_USER"],
+    roles: ["ROLE_ADMIN", "ROLE_STOCK AGENT", "ROLE_PAYMSTER"],
   },
   {
     name: "Suppliers",
     path: "/suppliers",
     icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/85d8cb76c43f333d15c299ce162cf79615ae17ec9dc29f8a27d461566828a46c?apiKey=2af2801656554d03b3578dfa85dbd1f8&",
-    roles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_USER"],
+    roles: ["ROLE_ADMIN", "ROLE_STOCK AGENT", "ROLE_PAYMSTER"],
   },
   {
     name: "Orders",
     path: "/orders",
     icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/85f9e2508fb3b5874e65de4ee54f23f7f77a36c3390528e226de3a5f72ab48a0?apiKey=2af2801656554d03b3578dfa85dbd1f8&",
-    roles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_USER"],
+    roles: ["ROLE_ADMIN", "ROLE_STOCK AGENT", "ROLE_PAYMSTER"],
   },
   {
     name: "Stores",
     path: "/stores",
     icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/19c1cc5b09486d6041039e205589e8dee355193b5d7fec4120879e6fad411f10?apiKey=2af2801656554d03b3578dfa85dbd1f8&",
-    roles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_USER"],
+    roles: ["ROLE_ADMIN", "ROLE_STOCK AGENT", "ROLE_PAYMSTER"],
   },
   {
     name: "Users",
