@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom"; // Import Navigate
 import AuthService from "./services/auth.service";
 import EventBus from "./common/EventBus";
 import Sidebar from "./components/sidebar.component";
@@ -26,6 +26,7 @@ const App = () => {
   const [showModeratorBoard, setShowModeratorBoard] = useState(false);
   const [showAdminBoard, setShowAdminBoard] = useState(false);
   const [currentUser, setCurrentUser] = useState(undefined);
+  const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
     const user = AuthService.getCurrentUser();
@@ -35,6 +36,8 @@ const App = () => {
       setShowModeratorBoard(user.roles.includes("ROLE_MANAGER"));
       setShowAdminBoard(user.roles.includes("ROLE_ADMIN"));
     }
+
+    setLoading(false); 
 
     EventBus.on("logout", logOut);
 
@@ -50,12 +53,19 @@ const App = () => {
     setCurrentUser(undefined);
   };
 
+  if (loading) {
+    return <div>Loading...</div>
+  }
+
   return (
     <div className="app-container">
-      {currentUser && <Sidebar currentUser={currentUser} />} {/* Pass currentUser */}
+      {currentUser && <Sidebar currentUser={currentUser} />} 
       <div className="main-content">
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route
+            path="/"
+            element={currentUser ? <Navigate to="/dashboard" /> : <Navigate to="/login" />}
+          />
           <Route path="/home" element={<Home />} />
           {!currentUser && <Route path="/login" element={<Login />} />}
           {!currentUser && <Route path="/register" element={<Register />} />}

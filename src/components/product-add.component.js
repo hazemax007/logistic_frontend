@@ -12,7 +12,7 @@ import {
   InputLabel,
   Select,
   FormHelperText,
-  Chip // Import Chip here
+  Chip
 } from "@mui/material";
 import axios from "axios";
 
@@ -34,7 +34,8 @@ const ProductAdd = ({ onAdd }) => {
 
   const [suppliers, setSuppliers] = useState([]);
   const [stores, setStores] = useState([]);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const categories = ["category1", "category2", "category3"];
 
@@ -49,19 +50,31 @@ const ProductAdd = ({ onAdd }) => {
         setSuppliers(suppliersResponse.data);
         setStores(storesResponse.data);
       } catch (err) {
-        setError("Failed to load suppliers or stores");
+        setError((prevErrors) => ({
+          ...prevErrors,
+          fetch: "Failed to load suppliers or stores",
+        }));
         console.error(err);
       }
     };
     fetchSuppliersAndStores();
   }, []);
 
-  const handleOpen = () => {
-    setOpen(true);
-  };
+  const validate = () => {
+    let tempErrors = {};
+    const { ref, name, buyPrice, quantity, minStockLevel, expiryDate, selectedSuppliers, selectedStores } = productData;
+    
+    if (!ref) tempErrors.ref = "Reference is required.";
+    if (!name) tempErrors.name = "Name is required.";
+    if (!buyPrice || isNaN(buyPrice) || Number(buyPrice) <= 0) tempErrors.buyPrice = "A valid buying price (greater than 0) is required.";
+    if (!quantity || isNaN(quantity) || Number(quantity) <= 0) tempErrors.quantity = "A valid quantity (greater than 0) is required.";
+    if (!minStockLevel || isNaN(minStockLevel) || Number(minStockLevel) < 0) tempErrors.minStockLevel = "A valid minimum stock level (0 or more) is required.";
+    if (!expiryDate) tempErrors.expiryDate = "Expiry date is required.";
+    if (selectedSuppliers.length === 0) tempErrors.selectedSuppliers = "At least one supplier must be selected.";
+    if (selectedStores.length === 0) tempErrors.selectedStores = "At least one store must be selected.";
 
-  const handleClose = () => {
-    setOpen(false);
+    setError(tempErrors);
+    return Object.keys(tempErrors).length === 0;
   };
 
   const handleChange = (e) => {
@@ -88,6 +101,10 @@ const ProductAdd = ({ onAdd }) => {
   };
 
   const handleSubmit = async () => {
+    if (!validate()) return; // Stop if validation fails
+
+    setLoading(true);
+
     try {
       const formData = new FormData();
       formData.append("ref", productData.ref);
@@ -122,18 +139,25 @@ const ProductAdd = ({ onAdd }) => {
         selectedSuppliers: [],
         selectedStores: [],
       });
+      setError({});
       setOpen(false);
     } catch (error) {
+      setError((prevErrors) => ({
+        ...prevErrors,
+        submit: "Failed to add product. Please try again later.",
+      }));
       console.error("Error adding product:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div>
-      <Button variant="contained" color="primary" onClick={handleOpen}>
+      <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
         Add Product
       </Button>
-      <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md" fullWidth>
         <DialogTitle>Add New Product</DialogTitle>
         <DialogContent>
           <Box>
@@ -145,6 +169,8 @@ const ProductAdd = ({ onAdd }) => {
               onChange={handleChange}
               variant="outlined"
               margin="normal"
+              error={!!error.ref}
+              helperText={error.ref}
             />
             <TextField
               fullWidth
@@ -154,6 +180,8 @@ const ProductAdd = ({ onAdd }) => {
               onChange={handleChange}
               variant="outlined"
               margin="normal"
+              error={!!error.name}
+              helperText={error.name}
             />
             <TextField
               fullWidth
@@ -163,6 +191,8 @@ const ProductAdd = ({ onAdd }) => {
               onChange={handleChange}
               variant="outlined"
               margin="normal"
+              error={!!error.buyPrice}
+              helperText={error.buyPrice}
             />
             <TextField
               fullWidth
@@ -172,6 +202,8 @@ const ProductAdd = ({ onAdd }) => {
               onChange={handleChange}
               variant="outlined"
               margin="normal"
+              error={!!error.quantity}
+              helperText={error.quantity}
             />
             <TextField
               fullWidth
@@ -181,6 +213,8 @@ const ProductAdd = ({ onAdd }) => {
               onChange={handleChange}
               variant="outlined"
               margin="normal"
+              error={!!error.minStockLevel}
+              helperText={error.minStockLevel}
             />
             <TextField
               fullWidth
@@ -194,6 +228,8 @@ const ProductAdd = ({ onAdd }) => {
               InputLabelProps={{
                 shrink: true,
               }}
+              error={!!error.expiryDate}
+              helperText={error.expiryDate}
             />
             <FormControl fullWidth margin="normal">
               <InputLabel>Category</InputLabel>
@@ -243,20 +279,14 @@ const ProductAdd = ({ onAdd }) => {
                 multiple
                 name="selectedSuppliers"
                 value={productData.selectedSuppliers}
-                onChange={(e) =>
-                  setProductData((prevData) => ({
-                    ...prevData,
-                    selectedSuppliers: e.target.value,
-                  }))
-                }
+                onChange={(e) => setProductData({ ...productData, selectedSuppliers: e.target.value })}
                 renderValue={(selected) => (
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  <div>
                     {selected.map((value) => (
                       <Chip key={value} label={value} />
                     ))}
-                  </Box>
+                  </div>
                 )}
-                variant="outlined"
               >
                 {suppliers.map((supplier) => (
                   <MenuItem key={supplier.name} value={supplier.name}>
@@ -264,7 +294,10 @@ const ProductAdd = ({ onAdd }) => {
                   </MenuItem>
                 ))}
               </Select>
-              <FormHelperText>Select suppliers for the product</FormHelperText>
+              <FormHelperText>Select at least one supplier</FormHelperText>
+              {error.selectedSuppliers && (
+                <FormHelperText error>{error.selectedSuppliers}</FormHelperText>
+              )}
             </FormControl>
             <FormControl fullWidth margin="normal">
               <InputLabel>Stores</InputLabel>
@@ -272,20 +305,14 @@ const ProductAdd = ({ onAdd }) => {
                 multiple
                 name="selectedStores"
                 value={productData.selectedStores}
-                onChange={(e) =>
-                  setProductData((prevData) => ({
-                    ...prevData,
-                    selectedStores: e.target.value,
-                  }))
-                }
+                onChange={(e) => setProductData({ ...productData, selectedStores: e.target.value })}
                 renderValue={(selected) => (
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  <div>
                     {selected.map((value) => (
                       <Chip key={value} label={value} />
                     ))}
-                  </Box>
+                  </div>
                 )}
-                variant="outlined"
               >
                 {stores.map((store) => (
                   <MenuItem key={store.name} value={store.name}>
@@ -293,16 +320,25 @@ const ProductAdd = ({ onAdd }) => {
                   </MenuItem>
                 ))}
               </Select>
-              <FormHelperText>Select stores for the product</FormHelperText>
+              <FormHelperText>Select at least one store</FormHelperText>
+              {error.selectedStores && (
+                <FormHelperText error>{error.selectedStores}</FormHelperText>
+              )}
             </FormControl>
+            {error.submit && <Box color="error.main">{error.submit}</Box>}
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={() => setOpen(false)} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleSubmit} color="primary" variant="contained">
-            Add
+          <Button
+            onClick={handleSubmit}
+            color="primary"
+            variant="contained"
+            disabled={loading || Object.keys(error).length > 0}
+          >
+            {loading ? "Adding..." : "Add Product"}
           </Button>
         </DialogActions>
       </Dialog>
@@ -311,7 +347,3 @@ const ProductAdd = ({ onAdd }) => {
 };
 
 export default ProductAdd;
-
-
-
-

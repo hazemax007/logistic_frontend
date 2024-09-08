@@ -14,6 +14,17 @@ import {
   TableHead,
   TableRow,
   Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Checkbox,
+  FormControlLabel,
+  Slider,
+  Select,
+  MenuItem,
+  Chip,
+  TextField,
 } from "@mui/material";
 import {
   Delete as DeleteIcon,
@@ -29,11 +40,17 @@ import UpdateQuantityDialog from "./update-qte-store.component";
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [stores, setStores] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [priceRange, setPriceRange] = useState([0, 100]);
+  const [inStockOnly, setInStockOnly] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isQuantityDialogOpen, setIsQuantityDialogOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const productsPerPage = 5;
 
   useEffect(() => {
@@ -44,6 +61,7 @@ const Products = () => {
           axios.get("http://localhost:8080/api/stores"),
         ]);
         setProducts(productsResponse.data);
+        setFilteredProducts(productsResponse.data);
         setStores(storesResponse.data);
       } catch (error) {
         console.error("Error fetching products or stores:", error);
@@ -54,10 +72,14 @@ const Products = () => {
 
   const handleAddProduct = (newProduct) => {
     setProducts([...products, newProduct]);
+    setFilteredProducts([...products, newProduct]);
   };
 
   const handleUpdateProduct = (updatedProduct) => {
     setProducts(products.map((product) =>
+      product.id === updatedProduct.id ? updatedProduct : product
+    ));
+    setFilteredProducts(products.map((product) =>
       product.id === updatedProduct.id ? updatedProduct : product
     ));
   };
@@ -66,6 +88,7 @@ const Products = () => {
     try {
       await axios.delete(`http://localhost:8080/api/products/${productId}`);
       setProducts(products.filter((product) => product.id !== productId));
+      setFilteredProducts(filteredProducts.filter((product) => product.id !== productId));
     } catch (error) {
       console.error("Error deleting product:", error);
     }
@@ -99,11 +122,51 @@ const Products = () => {
     setIsEditModalOpen(true);
   };
 
+  const handleSearchChange = (event) => {
+    const query = event.target.value;
+    setSearchQuery(query);
+    const filtered = products.filter(product =>
+      product.name.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredProducts(filtered);
+  };
+
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
+  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
 
-  const totalPages = Math.ceil(products.length / productsPerPage);
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+
+  const applyFilters = () => {
+    let updatedProducts = products;
+
+    if (selectedCategory) {
+      updatedProducts = updatedProducts.filter(product => product.category === selectedCategory);
+    }
+
+    if (inStockOnly) {
+      updatedProducts = updatedProducts.filter(product => product.quantity > 0);
+    }
+
+    updatedProducts = updatedProducts.filter(product => 
+      product.buyPrice >= priceRange[0] && product.buyPrice <= priceRange[1]
+    );
+
+    setFilteredProducts(updatedProducts);
+    setIsFilterDialogOpen(false);
+  };
+
+  const handleFilterDialogOpen = () => {
+    setIsFilterDialogOpen(true);
+  };
+
+  const handleFilterDialogClose = () => {
+    setIsFilterDialogOpen(false);
+  };
+
+  const resetCategoryFilter = () => setSelectedCategory("");
+  const resetPriceRangeFilter = () => setPriceRange([0, 100]);
+  const resetStockFilter = () => setInStockOnly(false);
 
   return (
     <Container>
@@ -112,7 +175,6 @@ const Products = () => {
           Overall Inventory
         </Typography>
         <Divider />
-        {/* Your statistics and other UI elements */}
       </Box>
 
       <Box my={4}>
@@ -121,9 +183,17 @@ const Products = () => {
         </Typography>
         <Box display="flex" justifyContent="flex-end" mb={2}>
           <ProductAdd onAdd={handleAddProduct} />
-          <Button variant="outlined" style={{ marginRight: "8px" }}>
+          <Button variant="outlined" style={{ marginRight: "8px" }} onClick={handleFilterDialogOpen}>
             Filters
           </Button>
+        </Box>
+        <Box mb={2}>
+          <TextField
+            fullWidth
+            placeholder="Search by product name"
+            value={searchQuery}
+            onChange={handleSearchChange}
+          />
         </Box>
         <TableContainer component={Paper}>
           <Table>
@@ -177,26 +247,64 @@ const Products = () => {
         </Box>
       </Box>
 
-      <ProductDetails
-        open={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        product={selectedProduct}
-      />
+      <Dialog open={isFilterDialogOpen} onClose={handleFilterDialogClose}>
+        <DialogTitle>Filter Products</DialogTitle>
+        <DialogContent>
+          <Box mb={2}>
+            <Typography>Category</Typography>
+            <Select
+              fullWidth
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              <MenuItem value="">All Categories</MenuItem>
+              <MenuItem value="category1">Category 1</MenuItem>
+              <MenuItem value="category2">Category 2</MenuItem>
+              <MenuItem value="category3">Category 3</MenuItem>
+            </Select>
+            {selectedCategory && (
+              <Button onClick={resetCategoryFilter}>Remove Category Filter</Button>
+            )}
+          </Box>
+          <Box mb={2}>
+            <Typography>Price Range</Typography>
+            <Slider
+              value={priceRange}
+              onChange={(e, newValue) => setPriceRange(newValue)}
+              valueLabelDisplay="auto"
+              min={0}
+              max={1000}
+            />
+            <Typography>
+              {`From ${priceRange[0]} DT to ${priceRange[1]} DT`}
+            </Typography>
+            {(priceRange[0] !== 0 || priceRange[1] !== 100) && (
+              <Button onClick={resetPriceRangeFilter}>Remove Price Range Filter</Button>
+            )}
+          </Box>
+          <Box mb={2}>
+            <FormControlLabel
+              control={<Checkbox checked={inStockOnly} onChange={() => setInStockOnly(!inStockOnly)} />}
+              label="In Stock Only"
+            />
+            {inStockOnly && (
+              <Button onClick={resetStockFilter}>Remove In Stock Filter</Button>
+            )}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleFilterDialogClose}>Cancel</Button>
+          <Button onClick={applyFilters} color="primary">Apply</Button>
+        </DialogActions>
+      </Dialog>
 
-      <ProductEdit
-        open={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        product={selectedProduct}
-        onUpdate={handleUpdateProduct}
-      />
-
-      <UpdateQuantityDialog
-        open={isQuantityDialogOpen}
-        onClose={handleCloseQuantityDialog}
-        product={selectedProduct}
-        stores={stores}
-        onUpdate={handleUpdateProduct}
-      />
+      {selectedProduct && (
+        <>
+          <ProductDetails open={isModalOpen} onClose={() => setIsModalOpen(false)} product={selectedProduct} />
+          <ProductEdit open={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} product={selectedProduct} onUpdate={handleUpdateProduct} />
+          <UpdateQuantityDialog open={isQuantityDialogOpen} onClose={handleCloseQuantityDialog} product={selectedProduct} />
+        </>
+      )}
     </Container>
   );
 };
