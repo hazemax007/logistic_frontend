@@ -222,9 +222,6 @@ const Products = () => {
                     <IconButton onClick={() => editProduct(product)} color="primary">
                       <EditIcon />
                     </IconButton>
-                    <IconButton onClick={() => handleOpenQuantityDialog(product)} color="primary">
-                      <AddIcon />
-                    </IconButton>
                     <IconButton onClick={() => handleDeleteProduct(product.id)} color="secondary">
                       <DeleteIcon />
                     </IconButton>
@@ -302,7 +299,6 @@ const Products = () => {
         <>
           <ProductDetails open={isModalOpen} onClose={() => setIsModalOpen(false)} product={selectedProduct} />
           <ProductEdit open={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} product={selectedProduct} onUpdate={handleUpdateProduct} />
-          <UpdateQuantityDialog open={isQuantityDialogOpen} onClose={handleCloseQuantityDialog} product={selectedProduct} />
         </>
       )}
     </Container>
